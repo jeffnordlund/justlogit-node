@@ -11,7 +11,7 @@ module.exports = function (token) {
 
   function executeGet(method, query, callback) {
 
-    var url = 'https://addto.justlog.it/v1/' + _this.token + '/' + method + '?' + query;
+    var url = 'https://addto.justlog.it/v1/log/' + _this.token + '/' + method + '?' + query;
 
     https.get(url, function(res) {
       res.on('data', function (d) {
@@ -60,8 +60,8 @@ module.exports = function (token) {
 
   this.logError = function (obj) {
     if (this.token) {
-      var method = 'error';
-      executePost(method, obj, function (err) {
+      var category = 'error';
+      executePost(category, obj, function (err) {
       });
     }
     else {
@@ -71,12 +71,12 @@ module.exports = function (token) {
 
   this.logPerformance = function (method, timing, user, details) {
     if (this.token) {
-      var method = 'perf';
+      var category = 'perf';
       var query = 'm=' + encodeURIComponent(method) + '&t=' + encodeURIComponent(timing);
       if (user) query += '&u=' + encodeURIComponent(user);
       if (details) query += '&d=' + encodeURIComponent(details);
 
-      executeGet(method, query, function(err) {
+      executeGet(category, query, function(err) {
       });
     }
     else {
@@ -86,11 +86,11 @@ module.exports = function (token) {
 
   this.logEvent = function (name, description, user) {
     if (this.token) {
-      var method = 'event';
+      var category = 'event';
       var query = 'n=' + encodeURIComponent(name) + '&d=' + encodeURIComponent(description);
       if (user) query += '&u=' + encodeURIComponent(user);
 
-      executeGet(method, query, function (err) {
+      executeGet(category, query, function (err) {
       });
     }
     else {
@@ -100,11 +100,11 @@ module.exports = function (token) {
 
   this.logInformation = function (method, details, user) {
     if (this.token) {
-      var method = 'info';
+      var category = 'info';
       var query = 'm=' + encodeURIComponent(method) + '&d=' + encodeURIComponent(details);
       if (user) query += '&u=' + encodeURIComponent(user);
 
-      executeGet(method, query, function (err) {
+      executeGet(category, query, function (err) {
       });
     }
     else {
