@@ -3,6 +3,7 @@
 "use strict";
 
 var Logger = require('../index.js');
+var assert = require('assert');
 
 // unit test
 
@@ -30,7 +31,7 @@ describe('logger', function () {
       
       var logger = new Logger('123456');
       logger.logError(error, 'johnsmith', null, function (err) {
-        assert(!err, 'Error was returned from error logger');
+        assert(!err, 'Error returned from error logger');
         done();
       });
     });
