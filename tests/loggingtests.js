@@ -13,8 +13,7 @@ describe('logger', function () {
   describe('logError', function () {
 
     it('should log an error', function (done) {
-      var error = {};
-      error.message = 'test error';
+      var error = new Error('test error');
       error.stack = 'error stack';
       error.details = 'some error details';
 
@@ -23,6 +22,17 @@ describe('logger', function () {
       setTimeout(function () {
         done();
       }, 1200);
+    });
+
+    it ('should log an error with a user', function (done) {
+      var error = new Error('user error');
+      error.stack = 'some shit happened at line 1';
+      
+      var logger = new Logger('123456');
+      logger.logError(error, 'johnsmith', null, function (err) {
+        assert(!err, 'Error was returned from error logger');
+        done();
+      });
     });
   });
 
