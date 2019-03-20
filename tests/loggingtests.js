@@ -35,6 +35,19 @@ describe('logger', function () {
         done();
       });
     });
+
+
+    it ('should handle an error with quotes', function () {
+      var error = new Error('test "2" error');
+      error.stack = 'error "nice" stack';
+      error.details = 'some error details';
+
+      var logger = new Logger('123456');
+      logger.logError(error);
+      setTimeout(function () {
+        done();
+      }, 1200);
+    });
   });
 
 
