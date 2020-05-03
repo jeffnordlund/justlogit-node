@@ -1,10 +1,10 @@
 {
   "name": "justlogit",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Node module used to wrap the interactions with the JustLog.IT logging service",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/jeffnordlund/justlogit-node#readme",
   "devDependencies": {
-    "mocha": "^6.1.4"
+    "mocha": "^7.1.2"
   },
   "dependencies": {}
 }
