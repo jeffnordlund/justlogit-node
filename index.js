@@ -6,6 +6,10 @@ module.exports = function (token) {
   var _this = this;
   this.token = token;
 
+  let _actionloginterval = 60; // default to 60 seconds
+  this.appactions = {};
+
+
 
   function executeGet(method, query, callback) {
 
@@ -24,9 +28,9 @@ module.exports = function (token) {
 
   function executePost(method, obj, callback) {
 
-    var json = JSON.stringify(obj);
+    const json = JSON.stringify(obj);
 
-    var options = {
+    let options = {
       hostname : 'addto.justlog.it',
       port: 443,
       path: '/v1/log/' + _this.token + '/' + method,
@@ -40,15 +44,15 @@ module.exports = function (token) {
     var req = https.request(options, function (res) {
       res.setEncoding('utf8');
       res.on('data', function (d) {
-        console.log('data received');
+        //console.log('data received');
       });
       res.on('end', function () {
-        callback(null);
+        if (typeof callback !== 'undefined' && callback) callback(null);
       });
     });
 
     req.on('error', function (e) {
-      callback(e);
+      if (typeof callback !== 'undefined' && callback) callback(e);
     });
 
     req.write(json);
@@ -82,6 +86,105 @@ module.exports = function (token) {
     }
     else {
       return '';
+    }
+  }
+
+  function getstartdate() {
+    const start = new Date();
+
+    // calculate the start time
+    const startseconds = _actionloginterval % 60;
+    let offsetseconds = 0;
+
+    if (startseconds === 0) {
+      offsetseconds = start.getUTCSeconds();
+    }
+    else {
+      offsetseconds = startseconds % start.getUTCSeconds();
+    }
+    
+    start.setUTCSeconds(start.getUTCSeconds() - offsetseconds);
+    start.setUTCMilliseconds(0);
+    return start;
+  }
+
+  function createappaction(start) {
+    if (typeof start === 'undefined' || !start) start = getstartdate();
+
+    // create the first action
+    const action = {};
+    action.interval = _actionloginterval;
+    action.start = start;
+    action.end = new Date(start.getTime() + (_actionloginterval * 1000));
+    action.instances = [];
+
+    return action;
+  }
+
+
+  function summarizeinstances(instances) {
+    const result = {};
+    result.count = instances.length;
+
+    const timinginstances = instances.filter(function (item) {
+      return (item.hasOwnProperty('timing') && item.timing);
+    });
+
+    // sort by timing
+    if (timinginstances.length > 0) {
+      timinginstances.sort(function (i1, i2) {
+        return i1.timing - i2.timing;
+      });
+
+      result.mintiming = timinginstances[0].timing;
+      result.maxtiming = timinginstances[timinginstances.length - 1].timing;
+
+      // total up the timings
+      result.timing = 0;
+      timinginstances.forEach(function(item) {
+        result.timing += parseInt(item.timing, 10);
+      });
+    }
+
+    return result;
+  }
+
+
+  function saveappaction(name, appaction, cb) {
+
+    const pids = [];
+
+    for (let i = 0; i < appaction.instances.length; i++) {
+      let instance = appaction.instances[i];
+      if (typeof instance.pid !== 'undefined' && instance.pid) {
+        if (pids.indexOf(instance.pid) === -1) pids.push(instance.pid);
+      }
+    }
+
+    if (pids.length > 0) {
+      for (let i = 0; i < pids.length; i++) {
+        let pid = pids[i];
+        let items = appaction.instances.filter(function(item) {
+          return (item.pid === pid);
+        });
+
+        let result = summarizeinstances(items);
+        result.name = name;
+        result.timestamp = appaction.start.getTime();
+        result.interval = _actionloginterval;
+        result.pid = pid;
+
+        executePost('appaction', result, cb);
+      }
+    }
+    else {
+      let result = summarizeinstances(appaction.instances);
+      result.name = name;
+      result.timestamp = appaction.start.getTime();
+      result.interval = _actionloginterval;
+      result.pid = pid;
+
+      executePost('appaction', result, cb);
     }
   }
 
@@ -162,4 +265,50 @@ module.exports = function (token) {
       cb(null);
     }
   };
+
+  /*
+    Call this to change the default app action logging interval.  The default 
+    interval is 60 seconds.  The lowest interval allowed is 10 seconds.
+  */
+  this.setAppActionLogInterval = function (seconds) {
+    let value = parseInt(seconds, 10);
+    // make sure this is a number at least 10 seconds
+    if (!isNaN(value) && value >= 10) _actionloginterval = value;
+  };
+
+  /*
+    Log the app action.  The name is the only thing required, but the process identifier (pid)
+    will allow more granular process tracking (if you are running multiple process instances on a single
+    server).  Using the timing will allow both action count tracking as well as action performance.
+  */
+  this.logAppAction = function (name, pid, timing, cb) {
+    if (typeof name === 'undefined' || !name) return;
+
+    const now = new Date();
+
+    const instance = {};
+    if (typeof pid !== 'undefined' && pid) instance.pid = pid;
+    if (typeof timing !== 'undefined' && timing) instance.timing = timing;
+
+    if (this.appactions.hasOwnProperty(name)) {
+      const nowtime = now.getTime();
+      if (nowtime >= this.appactions[name].start.getTime() && nowtime < this.appactions[name].end.getTime()) {
+        this.appactions[name].instances.push(instance);
+        if (typeof cb !== 'undefined' && cb) cb(null);
+      }
+      else {
+        const appaction = this.appactions[name];
+        this.appactions[name] = createappaction(appaction.end);
+        this.appactions[name].instances.push(instance);
+        // post the old app action block
+        saveappaction(name, appaction, cb);
+      }
+    }
+    else {
+      this.appactions[name] = createappaction();
+      this.appactions[name].instances.push(instance);
+      if (typeof cb !== 'undefined' && cb) cb(null);
+    }
+  };
+
 };
