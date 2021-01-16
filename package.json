@@ -1,6 +1,6 @@
 {
   "name": "justlogit",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Node module used to wrap the interactions with the JustLog.IT logging service",
   "main": "index.js",
   "scripts": {
@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/jeffnordlund/justlogit-node#readme",
   "devDependencies": {
-    "mocha": "^7.1.2"
+    "mocha": "^8.2.1"
   },
   "dependencies": {}
 }

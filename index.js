@@ -206,11 +206,11 @@ module.exports = function (token) {
       addStateValues(err, statevalues);
 
       executePost(category, err, function (e) {
-        if (cb) cb(e);
+        if (typeof cb !== 'undefined' && cb) cb(e);
       });
     }
     else {
-      if (cb) cb(null);
+      if (typeof cb !== 'undefined' && cb) cb(null);
     }
   };
 
@@ -224,11 +224,11 @@ module.exports = function (token) {
       query += getStateQueryValues(statevalues);
 
       executeGet(category, query, function(err) {
-        if (cb) cb(err);
+        if (typeof cb !== 'undefined' && cb) cb(err);
       });
     }
     else {
-      cb(null);
+      if (typeof cb !== 'undefined' && cb) cb(null);
     }
   };
 
@@ -241,11 +241,11 @@ module.exports = function (token) {
       query += getStateQueryValues(statevalues);
 
       executeGet(category, query, function (err) {
-        if (cb) cb(err);
+        if (typeof cb !== 'undefined' && cb) cb(err);
       });
     }
     else {
-      cb(null);
+      if (typeof cb !== 'undefined' && cb) cb(null);
     }
   };
 
@@ -258,11 +258,11 @@ module.exports = function (token) {
       query += getStateQueryValues(statevalues);
 
       executeGet(category, query, function (err) {
-        if (cb) cb(err);
+        if (typeof cb !== 'undefined' && cb) cb(err);
       });
     }
     else {
-      cb(null);
+      if (typeof cb !== 'undefined' && cb) cb(null);
     }
   };
 
