@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/jeffnordlund/justlogit-node#readme",
   "devDependencies": {
-    "mocha": "^7.1.2"
+    "mocha": "^8.2.1"
   },
   "dependencies": {}
 }
