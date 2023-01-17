@@ -10,9 +10,12 @@ const JLIError = require('./jlierror'),
 class Logger {
     constructor(token) {
         this.token = token;
-        if (!this.token) throw 'No logging token provided';
-
-        this.appactionlist = new AppActionList(this.token, 60);
+        if (!this.token) {
+            console.log('No token provided for the justlogit logger.  Logging will not function.');
+        }
+        else {
+            this.appactionlist = new AppActionList(this.token, 60);
+        }
     }
 
     async logError(errorobject, user, statevalues, cb) {
