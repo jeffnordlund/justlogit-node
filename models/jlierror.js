@@ -32,7 +32,7 @@ class JLIError {
                 let statevalue = statevalues[i];
                 if (statevalue.hasOwnProperty('name') && statevalue.hasOwnProperty('value')) {
                     if (!this.hasOwnProperty(statevalue.name)) {
-                        this[statevalue.name] = statevalue.value;
+                        this.statevalues[statevalue.name] = statevalue.value;
                     }
                 }
             }
