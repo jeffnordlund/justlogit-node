@@ -54,9 +54,12 @@ class JLIEventEntry {
         const me = this;
         return new Promise(async (success, failure) => {
             try {
-                // format the query string
-                const querystring = me.getquerystring();
-                await HttpInterface.get(loggingtoken, 'event', querystring);
+                if (me.isvalid()) {
+                    // format the query string
+                    const querystring = me.getquerystring();
+                    await HttpInterface.get(loggingtoken, 'event', querystring);
+                }
+                
                 success(null);
             }
             catch(e) {

@@ -20,9 +20,7 @@ class Logger {
 
     async logError(errorobject, user, statevalues, cb) {
         const token = this.token;
-        const erroritem = new JLIError();
-        erroritem.message = (errorobject.hasOwnProperty('message')) ? errorobject.message : null;
-        erroritem.stack = (errorobject.hasOwnProperty('stack')) ? errorobject.stack : null;
+        const erroritem = new JLIError(errorobject);
         erroritem.user = (typeof user !== 'undefined' && user) ? user : null;
     
         if (typeof statevalues !== 'undefined' && statevalues && Array.isArray(statevalues)) {

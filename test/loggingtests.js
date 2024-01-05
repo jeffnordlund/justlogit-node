@@ -7,10 +7,6 @@ const assert = require('assert');
 
 const token = 'z1bekO69T-d'; // token for the test app
 
-// unit test
-
-// set up the object
-
 describe('logger', function () {
   
   describe('logError', function () {
