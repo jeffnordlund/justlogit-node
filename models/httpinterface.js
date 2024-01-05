@@ -30,14 +30,13 @@ class HttpInterface {
                         }
                         else {
                             // call failed
-                            throw 'Logging call failed';
+                            failure({ message:'Logging call failed'});
                         }
                     });
                 });
 
                 request.on('error', (err) => {
-                    // failure(err);
-                    throw err;
+                    failure(err);
                 });
             }
             catch(e) {
@@ -77,14 +76,14 @@ class HttpInterface {
                         }
                         else {
                             // call failed
-                            throw 'Logging call failed';
+                            failure({ message:'Logging call failed'});
                         }
                     });
                 });
 
                 request.on('error', (err) => {
                     // failure(err);
-                    throw err;
+                    failure(err);
                 });
 
                 request.write(json);

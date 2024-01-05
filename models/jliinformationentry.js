@@ -54,8 +54,11 @@ class JLIInformationEntry {
         return new Promise(async (success, failure) => {
             try {
                 // format the query string
-                const querystring = me.getquerystring();
-                await HttpInterface.get(loggingtoken, 'info', querystring);
+                if (me.isvalid()) {
+                    const querystring = me.getquerystring();
+                    await HttpInterface.get(loggingtoken, 'info', querystring);
+                }
+                
                 success(null);
             }
             catch(e) {

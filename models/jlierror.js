@@ -5,13 +5,25 @@ const HttpInterface = require('./httpinterface');
 
 class JLIError {
 
-    constructor() {
+    constructor(errorobject) {
         this.message = '';
         this.stack = '';
         this.user = null;
 
         this.extravalues = {};
         this.statevalues = {};
+
+        if (typeof errorobject !== 'undefined' && errorobject) {
+            if (typeof errorobject === 'string') {
+                this.message = errorobject;
+            }
+            else if (typeof errorobject === 'object') {
+                if (errorobject.hasOwnProperty('message')) {
+                    this.message = errorobject.message;
+                }
+                this.stack = errorobject.stack || null;
+            }
+        }
     }
 
     isvalid() {
@@ -64,7 +76,10 @@ class JLIError {
                     }
                 }
 
-                await HttpInterface.post(loggingtoken, 'error', logobject);
+                if (this.isvalid()) {
+                    await HttpInterface.post(loggingtoken, 'error', logobject);
+                }
+                
                 success();
             }
             catch(e) {
