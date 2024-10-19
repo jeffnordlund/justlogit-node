@@ -76,7 +76,7 @@ class HttpInterface {
                         }
                         else {
                             // call failed
-                            failure({ message:'Logging call failed'});
+                            failure({ message:`Logging call failed.  status: ${status}  response: ${response}`});
                         }
                     });
                 });

@@ -40,11 +40,16 @@ class JLIError {
 
     addstatevalues(statevalues) {
         if (typeof statevalues !== 'undefined' && statevalues) {
-            for (let i = 0; i < statevalues.length; i++) {
-                let statevalue = statevalues[i];
-                if (statevalue.hasOwnProperty('name') && statevalue.hasOwnProperty('value')) {
-                    if (!this.hasOwnProperty(statevalue.name)) {
-                        this.statevalues[statevalue.name] = statevalue.value;
+            if (typeof statevalues === 'object') {
+                this.statevalues = statevalues;
+            }
+            else if (Array.isArray(statevalues)) {
+                for (let i = 0; i < statevalues.length; i++) {
+                    let statevalue = statevalues[i];
+                    if (statevalue.hasOwnProperty('name') && statevalue.hasOwnProperty('value')) {
+                        if (!this.hasOwnProperty(statevalue.name)) {
+                            this.statevalues[statevalue.name] = statevalue.value;
+                        }
                     }
                 }
             }
@@ -83,7 +88,8 @@ class JLIError {
                 success();
             }
             catch(e) {
-                failure(e);
+                console.error(`Error log call failed: ${JSON.stringify(e)}`);
+                success();
             }
         });
     }
